@@ -28342,55 +28342,32 @@ window.clr = function (element) {
   console.log("Clear called");  
 }
 
-window.yo3 = function () {
-  var promises = [];
+window.yo3 = async function () {
   console.log("lastHashId is: ",lastHashId);
   for (var i = lastHashId; i > lastHashId - 5; i--) {
-    var promise = loadSubmission(i);
-    promises.push(promise);
+    await loadSubmission(i);
   }
-  Promise.all(promises).then(function(result){
-    console.log("Results displayed");
-  });
 }
 
 function loadSubmission(hashId) {
-  console.log("Inside loadSubmission() with i= ",hashId);
-  let submission = {};
-  HashStore.deployed().then(function(contractInstance){
-    contractInstance.find(hashId, {from: web3.eth.accounts[0]}).then((result) => {
-      ipfs.catJSON(result[1], (err, data) => {
-        if(err){
-          console.log(err);
-        }
-        console.log(data);
-        document.getElementById("ans3").innerHTML += "<p>Tx #" + hashId + "<br>" + "data:   " + JSON.stringify(data) + "<br>" + "Timestamp: " + result[2] + "<br>" + "Sender: " + result[0] + "<br>" + "Hash: " + result[1] + "<br>";
+    return new Promise((resolve, reject) => {
+    console.log("Inside loadSubmission() with i= ",hashId);
+    let submission = {};
+    HashStore.deployed().then(function(contractInstance){
+      contractInstance.find(hashId, {from: web3.eth.accounts[0]}).then((result) => {
+        ipfs.catJSON(result[1], (err, data) => {
+          if(err){
+            console.log(err);
+          }
+          console.log(data);
+          document.getElementById("ans3").innerHTML += "<p>Tx #" + hashId + "<br>" + "data:   " + JSON.stringify(data) + "<br>" + "Timestamp: " + result[2] + "<br>" + "Sender: " + result[0] + "<br>" + "Hash: " + result[1] + "<br>";
+        })
+      resolve(result);
+        
       })
     })
   })
 }
-
-/* window.yo3 = function () {
-    for (var i = lastHashId; i > lastHashId - 5; i--) {
-      console.log("i: ", i, ",lastHashId: ", lastHashId);
-      HashStore.deployed().then(function (contractInstance) {
-        contractInstance.find(i, {
-          from: web3.eth.accounts[0]
-        }).then((result) => {
-          console.log(result);
-          document.getElementById("ans3").innerHTML += "<p>Tx #" + i + "</p>";
-          document.getElementById("ans3").innerHTML += "<p>sender: " + result[0] + "</p>" + "<p>hash: " + result[1] + "</p>";
-          var hash = result[1];
-          ipfs.catJSON(hash, (err, data) => {
-            if (err) {
-              console.log(err);
-            }
-            document.getElementById("ans3").innerHTML += "<p>data:" + JSON.stringify(data);
-          });
-        })
-      });
-    }
-} */
 
 window.addEventListener('load', function () {
   if (typeof web3 !== 'undefined') {
@@ -28411,9 +28388,9 @@ window.addEventListener('load', function () {
 
   HashStore.setProvider(web3.currentProvider);
   loadPrice();
-  setTimeout(function(){ console.log("price loaded: "+ price) }, 300);
+  setTimeout(function(){ console.log("price loaded: "+ price) }, 3000);
   loadLastHashId();
-  setTimeout(function(){ console.log("lastHashId loaded: "+ lastHashId) }, 300);
+  setTimeout(function(){ console.log("lastHashId loaded: "+ lastHashId) }, 3000);
 });
 
 /***/ }),
